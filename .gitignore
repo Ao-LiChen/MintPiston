@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Virtual environments
+.env
+.venv
+env/
+
+# Model checkpoints (large - distribute via Zenodo)
+piston-mint-fusion/saved_models/mint.ckpt
+
+# Generated embeddings (reproducible from data)
+piston-mint-fusion/output/embeddings/
+
+# Data (distribute via Zenodo)
+masif_test_copy/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

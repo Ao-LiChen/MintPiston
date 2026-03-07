@@ -1,0 +1,30 @@
+name: piston-mint
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - numpy>=1.21,<1.25
+  - scipy
+  - scikit-learn
+  - pandas
+  - matplotlib
+  - biopython
+  - pytorch=1.12.1
+  - cudatoolkit=11.3
+  - pip:
+    - einops==0.7.0
+    - tqdm
+    - plotly
+    - kaleido
+    - pdb2sql
+    - ml-collections
+    - lightning==1.9.5
+    - seaborn
+    - torchsummary
+    - torchsummaryX
+    - fairscale==0.4.3
+    - omegaconf>=2.3
+    - hydra-core>=1.3
