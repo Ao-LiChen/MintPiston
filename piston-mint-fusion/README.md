@@ -52,53 +52,11 @@ PDB File
 
 ---
 
-## Project Structure
-
-```
-MinP/
-  piston-main/           # PIsToN source code and pretrained weights
-  mint-main/             # MINT source code
-  piston-mint-fusion/    # This project
-    config/
-      default_config.py        # Unified configuration
-    data/
-      labels.csv               # PPI → binary label (0/1)
-      all_ppis.txt / train.txt / val.txt / test.txt
-    data_prepare/
-      sequence_extractor.py    # PDB → per-chain sequences + residue maps
-    models/
-      piston_embedder.py       # PIsToN backbone wrapper (16-dim CLS output)
-      mint_embedder.py         # MINT backbone wrapper (N×1280-dim output)
-      patch_residue_mapper.py  # resnames.npy → MINT token indices
-      fusion_model.py          # MLP classifier head
-    training/
-      dataset.py               # Dataset classes (raw and cached-embedding modes)
-      train.py                 # Training loop with early stopping
-      evaluate.py              # AUC, accuracy, F1, MCC, etc.
-    inference/
-      pipeline.py              # End-to-end prediction pipeline
-    saved_models/
-      PIsToN-only_best.pth     # Trained PIsToN-only MLP head
-      MINT-only_best.pth       # Trained MINT-only MLP head
-      Fusion_best.pth          # Trained fusion MLP head
-    run_benchmark.py           # Reproduce MaSIF-test benchmark (3-way comparison)
-    run_training.py            # Train on custom data
-    run_extract_embeddings.py  # Pre-extract backbone embeddings
-    run_inference.py           # Predict on new PDB files
-    prepare_masif_data.py      # Prepare MaSIF-test labels and splits
-    environment.yml
-    setup.py
-```
-
----
-
 ## Installation
 
 ### Requirements
 
-- Linux or Windows with WSL2 (recommended); Windows native supported
-- CUDA GPU with ≥8 GB VRAM
-- Conda
+
 
 ### 1. Set up directory layout
 
@@ -140,9 +98,9 @@ If you only want to run on the MaSIF-test dataset, the preprocessed data is avai
 
 ## Data & Weights
 
-The preprocessed MaSIF-test data and MINT checkpoint are distributed together as a single archive on Zenodo:
+The preprocessed MaSIF-test data and MINT checkpoint are distributed together:
 
-> **DOI**: *(to be added after upload)*
+> **Google Drive**: *[Link](https://drive.google.com/file/d/11MONX_6Y_O6Oyqf-jOD0orDofJ4RNfqP/view?usp=sharing)*
 
 The archive contains:
 ```
@@ -253,15 +211,3 @@ PPI identifier format: `{PDB_ID}_{side1_chains}_{side2_chains}`
 
 ---
 
-## References
-
-- **PIsToN**: Stebliankin et al. "Evaluating protein binding interfaces with transformer networks." *Nature Machine Intelligence* (2023). https://doi.org/10.1038/s42256-023-00715-4
-- **MINT**: Ullanat et al. "Learning the language of protein-protein interactions." *Nature Communications* (2026).
-- **MaSIF**: Gainza et al. "Deciphering interaction fingerprints from protein molecular surfaces using geometric deep learning." *Nature Methods* (2020).
-- **ESM-2**: Lin et al. "Evolutionary-scale prediction of atomic-level protein structure with a language model." *Science* (2023).
-
-## License
-
-- PIsToN: CC BY-NC-ND 4.0 (non-commercial use only)
-- MINT: MIT License
-- This fusion code: CC BY-NC-ND 4.0 (follows the most restrictive component)
