@@ -16,14 +16,21 @@ build/
 .venv
 env/
 
-# Model checkpoints (large - distribute via Zenodo)
+# Large model checkpoints (download separately)
 piston-mint-fusion/saved_models/mint.ckpt
+mint.ckpt
 
-# Generated embeddings (reproducible from data)
-piston-mint-fusion/output/embeddings/
+# Generated outputs (reproducible)
+piston-mint-fusion/output/
 
-# Data (distribute via Zenodo)
+# Data directories (download separately)
 masif_test_copy/
+pipeline_out/
+
+# Large binaries
+downloads/
+*.sif
+*.zip
 
 # IDE
 .vscode/
