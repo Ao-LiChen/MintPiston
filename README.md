@@ -14,15 +14,15 @@ Benchmark on the [MaSIF-test dataset](https://github.com/LPDI-EPFL/masif), compa
 | MINT-only   | 0.8209 | 0.7023 | 0.7383 | 0.6587 | 0.8397 | 0.4208 |
 | **Fusion**  | **0.9573** | **0.8931** | **0.8939** | 0.8872 | **0.9008** | **0.7864** |
 
-### SAbDab antibody-antigen (1,431 test samples)
+### SAbDab antibody-antigen (1,676 test samples)
 
-Benchmark on SAbDab-derived antibody-antigen interfaces with class-weighted loss and zero-padding for variable MINT dimensions (2560 -> 3840):
+Benchmark on SAbDab-derived antibody-antigen interfaces with HDOCK-generated decoys, class-weighted loss, and zero-padding for variable MINT dimensions (2560 -> 3840):
 
 | Model       |   AUC  |   Acc  |    F1  |  Prec  |   Rec  |   MCC  |   N  | Pos  | Neg |
 |-------------|--------|--------|--------|--------|--------|--------|------|------|-----|
-| PIsToN-only | 0.7258 | 0.7177 | 0.8288 | 0.9731 | 0.7218 | 0.1798 | 1431 | 1355 |  76 |
-| MINT-only   | **0.9348** | 0.8700 | 0.9268 | **0.9924** | 0.8694 | 0.4478 | 1431 | 1355 |  76 |
-| **Fusion**  | 0.9276 | **0.9273** | **0.9607** | 0.9853 | **0.9373** | **0.5155** | 1431 | 1355 |  76 |
+| PIsToN-only | 0.6672 | 0.6510 | 0.7570 | 0.8660 | 0.6723 | 0.1897 | 1676 | 1355 | 321 |
+| MINT-only   | 0.7628 | 0.5811 | 0.6692 | **0.9257** | 0.5240 | 0.2736 | 1676 | 1355 | 321 |
+| **Fusion**  | **0.8127** | **0.7440** | **0.8267** | 0.9134 | **0.7550** | **0.3784** | 1676 | 1355 | 321 |
 
 ---
 
@@ -109,7 +109,7 @@ If you only want to reproduce the benchmarks, the preprocessed data is available
 | Dataset | Contents | Link |
 |---------|----------|------|
 | MaSIF-test data + MINT checkpoint | 1,376 PDB files, 2,712 grid maps, CAPRI labels, `mint.ckpt` | [Google Drive](https://drive.google.com/file/d/11MONX_6Y_O6Oyqf-jOD0orDofJ4RNfqP/view?usp=sharing) |
-| SAbDab pipeline_out | Decoy PDBs, PIsToN grids, embeddings, labels, splits | [Google Drive](<TO_BE_ADDED>) |
+| SAbDab pipeline_out | 8,452 PDB files (native+decoy), PIsToN grids, embeddings, labels, splits | [Google Drive](<TO_BE_ADDED>) |
 
 ### MaSIF-test data
 
@@ -128,14 +128,13 @@ After downloading `pipeline_out_sabdab.zip`, unzip so that `pipeline_out/` sits 
 
 ```
 pipeline_out/
-  labels.csv                       16,710 PPI labels (native=1, decoy=0)
+  labels.csv                       16,710 PPI labels (native=11,041, decoy=5,669)
   ppi_list.txt                     16,710 PPI identifiers
   train.txt / val.txt / test.txt   train/val/test splits (no PDB-level leakage)
   benchmark_v2_results.json        SAbDab benchmark results
-  piston_config.py                 PIsToN preprocessing config
-  data_preparation/00-raw_pdbs/    native + HDOCK decoy PDB files
-  grid/                            PIsToN grid .npy + _resnames.npy files
-  embeddings/                      pre-extracted {ppi}_piston.npy + {ppi}_mint.npy
+  data_preparation/00-raw_pdbs/    8,452 native + HDOCK decoy PDB files (7.6 GB)
+  grid/                            PIsToN grid .npy + _resnames.npy files (12,586 PPIs, 1.7 GB)
+  embeddings/                      pre-extracted {ppi}_piston.npy + {ppi}_mint.npy (11,342 PPIs, 212 MB)
 ```
 
 ---
@@ -158,13 +157,11 @@ This extracts PIsToN (16-dim) and MINT (2560-dim) embeddings for 1,356 PPIs, tra
 ### SAbDab benchmark
 
 ```bash
-cd piston-mint-fusion
-python benchmarks/sabdab/run_benchmark_v2.py \
-    --pipeline_out ../pipeline_out \
-    --device cpu
+cd MintPiston
+python run_benchmark_v2.py --device cuda --max_epochs 100 --patience 15
 ```
 
-This trains and evaluates three MLP classifiers on pre-extracted embeddings from `pipeline_out/`. Uses class-weighted loss and proper train/val/test splits.
+This trains and evaluates three MLP classifiers (PIsToN-only, MINT-only, Fusion) on pre-extracted embeddings from `pipeline_out/`. Uses class-weighted loss, zero-padding for variable MINT dimensions, and proper train/val/test splits with no PDB-level leakage.
 
 ---
 
@@ -229,23 +226,16 @@ python run_training.py \
 
 ---
 
-## SAbDab Pipeline Scripts
+## SAbDab Scripts
 
-These scripts at the repository root handle SAbDab data preparation (decoy generation, feature extraction, label management):
+Scripts at the repository root for SAbDab benchmark and data management:
 
 | File | Purpose |
 |------|---------|
-| `sabdab_pipeline.py` | Main orchestrator (steps 1-6) |
-| `pipeline_config.py` | Paths and constants |
-| `pipeline_steps.py` | Step implementations |
-| `pipeline_utils.py` | PPI ID encoding/decoding |
-| `step1_generate_decoy_pdbs.py` | HDOCK decoy generation |
-| `step2_extract_features.py` | PIsToN feature extraction for decoys |
-| `run_step1_full.sh` | Full HDOCK run wrapper |
-| `run_piston_step3.sh` | PIsToN grid extraction |
-| `extract_decoy_embeddings.py` | MINT+PIsToN embedding extraction |
-| `update_labels_after_hdock.py` | Update labels/splits after new decoys |
-| `run_benchmark_v2.py` | SAbDab benchmark (standalone version) |
+| `run_benchmark_v2.py` | SAbDab benchmark: trains and evaluates PIsToN-only, MINT-only, and Fusion classifiers |
+| `extract_decoy_embeddings.py` | Extract MINT+PIsToN embeddings for PPIs with grid files |
+| `pipeline_config.py` | Shared paths and constants |
+| `pipeline_utils.py` | PPI ID encoding/decoding helpers |
 
 ---
 
