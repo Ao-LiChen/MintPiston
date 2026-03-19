@@ -109,7 +109,7 @@ If you only want to reproduce the benchmarks, the preprocessed data is available
 | Dataset | Contents | Link |
 |---------|----------|------|
 | MaSIF-test data + MINT checkpoint | 1,376 PDB files, 2,712 grid maps, CAPRI labels, `mint.ckpt` | [Google Drive](https://drive.google.com/file/d/11MONX_6Y_O6Oyqf-jOD0orDofJ4RNfqP/view?usp=sharing) |
-| SAbDab pipeline_out | 8,452 PDB files (native+decoy), PIsToN grids, embeddings, labels, splits | [Google Drive](<TO_BE_ADDED>) |
+| SAbDab pipeline_out | 8,452 PDB files (native+decoy), PIsToN grids, embeddings, labels, splits | [Google Drive](https://drive.google.com/file/d/1BwTtCkWKMTvXvNtcsaKoJx_dFEidfGYW/view?usp=sharing) |
 
 ### MaSIF-test data
 
